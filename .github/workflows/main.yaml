@@ -1,0 +1,43 @@
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+env:
+  JAVA_DISTRO: ''
+  JAVA_MAJOR_VERSION: ''
+  NODE_MAJOR_VERSION: ''
+
+jobs:
+  main-ci-cd:
+    name: 'Main Pipeline'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Setup :: Checkout'
+        uses: 'actions/checkout@v4'
+
+      - name: 'Setup :: Determine Java and Node versions'
+        run: |
+          echo "JAVA_DISTRO=$(cat .tool-versions | grep java | awk '{ print $2 }' | awk -F- '{ print $1 }')" >> $GITHUB_ENV
+          echo "JAVA_MAJOR_VERSION=$(cat .tool-versions | grep java | awk '{ print $2 }' | awk -F- '{ print $2 }' | awk -F. '{ print $1 }')" >> $GITHUB_ENV
+          echo "NODE_MAJOR_VERSION=$(cat .tool-versions | grep nodejs | awk '{ print $2 }' | awk -F. '{ print $1 }')" >> $GITHUB_ENV
+
+      - name: 'Setup :: Java'
+        uses: 'actions/setup-java@v3'
+        with:
+          distribution: ${{ env.JAVA_DISTRO }}
+          java-version: ${{ env.JAVA_MAJOR_VERSION }}
+          cache: 'maven'
+
+      - name: 'Setup :: Node'
+        uses: 'actions/setup-node@v3'
+        with:
+          node-version: ${{ env.NODE_MAJOR_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/main/client/package-lock.json'
+
+      - name: 'Application :: Build'
+        run: ./mvnw package -DskipTests
