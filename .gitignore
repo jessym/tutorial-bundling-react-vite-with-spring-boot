@@ -36,4 +36,4 @@ build/
 .DS_Store
 
 ### Dynamically generated ###
-/src/main/resources/static/
+/src/main/resources/dashboard/

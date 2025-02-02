@@ -70,7 +70,7 @@ public class SpringConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        this.serveDirectory(registry, "/", "classpath:/static/");
+        this.serveDirectory(registry, "/dashboard", "classpath:/dashboard/");
     }
 
     private void serveDirectory(ResourceHandlerRegistry registry, String endpoint, String location) {
